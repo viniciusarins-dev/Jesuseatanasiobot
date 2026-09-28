@@ -1,0 +1,32 @@
+# Segredos — NUNCA commitar
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Dados e artefatos locais
+data/historical/*
+!data/historical/.gitkeep
+data/reports/*
+!data/reports/.gitkeep
+data/KILL_SWITCH
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+logs/
+
+# IDE / SO
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,100 @@
+# =============================================================================
+# config.yaml — parâmetros operacionais e da estratégia.
+#
+# Valores "[PREENCHER]" são informações reais que o sistema NÃO pode supor
+# (corretora, contrato, custos...). Enquanto não forem preenchidos, qualquer
+# funcionalidade que dependa deles recusa operar (falha segura).
+#
+# Os demais valores são EXEMPLOS e NÃO são adequados para dinheiro real.
+# =============================================================================
+
+market:
+  symbol: "[PREENCHER]"               # nome exato no MT5 da sua corretora (ex.: contrato vigente)
+  timeframe: M5                       # M1 | M5
+  timezone: America/Sao_Paulo
+  server_utc_offset_hours: "[PREENCHER]"  # fuso do SERVIDOR MT5 da corretora (ex.: -3). Ver README.
+  tick_size: "[PREENCHER]"            # conferido contra o MT5; divergência = não operar
+  tick_value: "[PREENCHER]"           # conferido contra o MT5; divergência = não operar
+  tick_value_tolerance: 0.0           # tolerância relativa na conferência do tick_value (0 = exato)
+  volume_type: real                   # real | tick
+  rollover_warning_days: 5            # avisa quando o vencimento do contrato estiver próximo
+
+data:
+  history_bars: 500                   # candles buscados a cada ciclo
+  max_tick_age_seconds: 30            # tick mais velho que isso = dado congelado (DEGRADED)
+  clock_tolerance_seconds: 120        # diferença máxima entre hora do tick e relógio local
+  block_on_gaps: true                 # gap intradiário na janela = não gerar sinal naquele ciclo
+  reconnect:
+    initial_delay_seconds: 1
+    backoff_factor: 2
+    max_delay_seconds: 60
+    max_attempts: 5                   # por ciclo de reconexão; depois o sistema fica DISCONNECTED
+  connect_timeout_ms: 60000
+
+strategy:
+  name: ma_vwap_volume
+  fast_ma: 9
+  slow_ma: 21
+  volume_period: 20
+  volume_multiplier: 1.2
+  use_vwap_filter: true
+
+risk:
+  initial_capital: 10000
+  risk_per_trade: 0.01
+  stop_points: 100
+  target_points: 200
+  max_daily_loss: 500
+  max_trades_per_day: 5
+  max_consecutive_losses: 3
+  recalc_levels_from_fill: true
+
+costs:
+  brokerage_per_contract: "[PREENCHER]"
+  b3_fee_per_contract: "[PREENCHER]"
+  slippage_points_entry: 2
+  slippage_points_exit: 2
+  source: "[PREENCHER]"               # fonte e data de referência dos custos
+
+tax:
+  day_trade_rate: 0.20
+  carry_forward_losses: true
+  irrf_rate: 0.01
+
+session:                               # horários em market.timezone — CONFIRMAR com a B3/corretora
+  signal_start: "09:10"
+  signal_end: "17:30"
+  flatten_time: "17:45"
+  avoid_opening_auction: true
+
+execution:
+  mode: PAPER                         # BACKTEST | PAPER | LIVE_SIGNAL | LIVE_EXECUTION
+  allow_real_orders: false
+  require_confirmation: true
+  max_contracts: 1                    # teto absoluto nesta versão: 1
+  max_price_deviation_points: 10
+  magic_number: "[PREENCHER]"
+  on_missing_protection: close        # close | alert
+  kill_switch_flatten: false
+  opposite_signal_policy: ignore      # somente "ignore" nesta versão
+
+backtest:
+  data_file: "[PREENCHER]"            # ex.: data/historical/WIN_M5.csv
+  intrabar_conflict: worst_case       # worst_case | use_m1
+  minimum_trades_warning: 100
+
+walk_forward:
+  train_days: "[PREENCHER]"
+  validation_days: "[PREENCHER]"
+  test_days: "[PREENCHER]"
+  selection_metric: profit_factor
+  min_trades_for_selection: 30
+
+database:
+  path: data/trading.db
+
+logging:
+  level: INFO
+  file: logs/trading.log
+  max_bytes: 5000000
+  backup_count: 10

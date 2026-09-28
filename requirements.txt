@@ -1,0 +1,14 @@
+# Biblioteca oficial do MetaTrader 5 — só existe para Windows.
+MetaTrader5>=5.0.45; sys_platform == "win32"
+# zoneinfo precisa da base IANA; no Windows ela não vem com o SO.
+tzdata>=2024.1; sys_platform == "win32"
+
+pandas>=2.1
+numpy>=1.26
+PyYAML>=6.0
+python-dotenv>=1.0
+python-telegram-bot>=21.0
+matplotlib>=3.8
+
+# Testes
+pytest>=8.0
