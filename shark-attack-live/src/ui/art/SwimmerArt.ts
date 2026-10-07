@@ -39,10 +39,16 @@ export function drawSwimmer(ctx: CanvasRenderingContext2D, player: Player): void
   drawSpotlight(ctx, player);
   drawSnorkelBubbles(ctx, player, r, t);
 
+  // Ao levar dano: treme e é empurrado para trás por um instante.
+  const hurt = Math.min(1, player.hitFlash * 4);
+  const jolt = hurt * Math.sin(t * 70) * 0.22;
+  const recoil = -hurt * r * 0.25;
+
   ctx.save();
   ctx.translate(player.x, player.y);
-  ctx.rotate(player.bodyAngle);
-  ctx.scale(breathe, breathe);
+  ctx.rotate(player.bodyAngle + jolt);
+  ctx.translate(recoil, 0);
+  ctx.scale(breathe * (1 - hurt * 0.06), breathe * (1 + hurt * 0.06));
 
   // Sombra no fundo.
   ctx.save();
@@ -110,9 +116,9 @@ function legPoints(r: number, side: number, k: number) {
 
 function armPoints(r: number, side: number): number[][] {
   return [
-    [r * 0.3, side * r * 0.38],
-    [r * 0.72, side * r * 0.36],
-    [r * 1.05, side * r * 0.1],
+    [r * 0.25, side * r * 0.42],
+    [r * 0.62, side * r * 0.62],
+    [r * 1.02, side * r * 0.14],
   ];
 }
 
@@ -252,9 +258,16 @@ function drawArmsAndGun(ctx: CanvasRenderingContext2D, r: number, loaded: boolea
     ctx.strokeStyle = COLORS.outline;
     ctx.lineWidth = r * 0.27;
     strokePolyline(ctx, [shoulder, elbow, hand]);
-    ctx.strokeStyle = COLORS.suit;
+    ctx.strokeStyle = COLORS.suitLight;
     ctx.lineWidth = r * 0.2;
     strokePolyline(ctx, [shoulder, elbow, hand]);
+    // Faixa laranja no antebraço.
+    ctx.strokeStyle = COLORS.stripe;
+    ctx.lineWidth = r * 0.06;
+    strokePolyline(ctx, [
+      [elbow[0] + (hand[0] - elbow[0]) * 0.35, elbow[1] + (hand[1] - elbow[1]) * 0.35],
+      [elbow[0] + (hand[0] - elbow[0]) * 0.55, elbow[1] + (hand[1] - elbow[1]) * 0.55],
+    ]);
     // Luva.
     ctx.fillStyle = "#212121";
     ctx.beginPath();

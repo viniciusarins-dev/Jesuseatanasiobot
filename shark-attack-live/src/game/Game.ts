@@ -123,7 +123,14 @@ export class Game implements GameActions {
   private moveSharks(dt: number): void {
     const { player } = this.state;
     for (const shark of this.state.sharks) {
-      shark.update(dt, player.x, player.y, this.difficulty.speedMultiplier, this.cfg.sharkBehavior.knockbackDecay);
+      shark.update(
+        dt,
+        player.x,
+        player.y,
+        this.difficulty.speedMultiplier,
+        this.cfg.sharkBehavior.knockbackDecay,
+        this.cfg.sharkBehavior.mouthOpenRange,
+      );
     }
   }
 
@@ -147,6 +154,7 @@ export class Game implements GameActions {
       const { player } = state;
       if (bite.damage > 0) {
         this.score.addDamageTaken(state.round, bite.damage);
+        if (!player.alive) state.lastKiller = { type: bite.shark.type, owner: bite.shark.owner };
         this.effects.floatingText(player.x, player.y - player.radius - 70, `-${bite.damage}`, "#ff1744", 64);
         this.effects.burst(player.x, player.y, "#ff5252", 22, 420, 10);
         this.effects.shake(bite.shark.isMega ? 22 : 10, 0.3);
@@ -192,6 +200,10 @@ export class Game implements GameActions {
     this.effects.burst(state.player.x, state.player.y, "#ff8f00", 60, 600, 14);
     this.effects.shake(25, 0.6);
     this.audio.play("gameover");
+    const killer = state.lastKiller;
+    if (killer?.owner && killer.owner !== "❤️") {
+      this.showFeed(`🦈 Tubarão de ${killer.owner} venceu!`, "#ff9e80");
+    }
   }
 
   /** Nova rodada. Tubarões de presentes ainda na fila nascem na rodada nova. */
@@ -199,6 +211,7 @@ export class Game implements GameActions {
     const { state } = this;
     state.phase = "playing";
     state.roundNumber += 1;
+    state.lastKiller = null;
     state.round = createRoundStats();
     state.player = createPlayer(this.cfg);
     state.sharks = [];
@@ -304,7 +317,7 @@ export class Game implements GameActions {
     this.cta.render(ctx, state.likesTowardChaos, this.cfg.interactions.likeThreshold);
     if (state.phase === "gameover" && state.lastRound) {
       // Alertas não cobrem o resultado da rodada.
-      this.gameOverScreen.render(ctx, state.lastRound, state.bestScore, state.gameOverTimer);
+      this.gameOverScreen.render(ctx, state.lastRound, state.bestScore, state.gameOverTimer, state.lastKiller);
     } else {
       this.alerts.render(ctx);
     }

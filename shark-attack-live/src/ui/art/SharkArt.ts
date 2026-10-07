@@ -179,8 +179,13 @@ export function drawSharkBody(ctx: CanvasRenderingContext2D, shark: Shark, time:
   drawDorsalFin(ctx, spine, r, dark, sp.finTip);
   if (sp.spikes) drawSpikes(ctx, spine, r, time);
 
-  if (sp.head === "hammer") drawHammerHead(ctx, spine, r, shark.bodyColor, dark);
-  else drawEyes(ctx, spine, r, shark.isMega, time);
+  if (sp.head === "hammer") {
+    drawHammerHead(ctx, spine, r, shark.bodyColor, dark);
+    drawMouth(ctx, spine, r, shark.mouthOpen, 0.16);
+  } else {
+    drawMouth(ctx, spine, r, shark.mouthOpen, 0.06);
+    drawEyes(ctx, spine, r, shark.isMega, time);
+  }
 
   // Flash branco ao levar dano.
   if (shark.hitFlash > 0) {
@@ -190,6 +195,56 @@ export function drawSharkBody(ctx: CanvasRenderingContext2D, shark: Shark, time:
     ctx.globalAlpha = 1;
   }
   ctx.restore();
+}
+
+/**
+ * Boca aberta com dentes, no focinho. `open` 0..1 (perto do alvo ~0.55,
+ * mordendo = 1). `t` = posição ao longo do corpo.
+ */
+function drawMouth(ctx: CanvasRenderingContext2D, s: Spine, r: number, open: number, t: number): void {
+  if (open < 0.08) return;
+  const i = Math.round(t * SEGMENTS);
+  const cx = s.xs[i] - r * 0.02;
+  const cy = s.ys[i];
+  const rx = r * (0.04 + 0.11 * open);
+  const ry = Math.max(s.hw[Math.min(SEGMENTS, i + 2)] * 0.7, r * 0.11) * (0.55 + 0.45 * open);
+
+  const inside = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+  inside.addColorStop(0, "#c62828");
+  inside.addColorStop(0.6, "#5d0b0b");
+  inside.addColorStop(1, "#1a0000");
+  ctx.fillStyle = inside;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Dentes triangulares em volta da abertura, apontando para dentro.
+  const teeth = 10;
+  const size = Math.max(3.5, r * 0.075) * (0.6 + 0.4 * open);
+  ctx.fillStyle = "#fafafa";
+  ctx.strokeStyle = "rgba(0,0,0,0.35)";
+  ctx.lineWidth = 1;
+  for (let k = 0; k < teeth; k++) {
+    const a = (k / teeth) * Math.PI * 2;
+    const ex = cx + Math.cos(a) * rx;
+    const ey = cy + Math.sin(a) * ry;
+    const ix = cx + Math.cos(a) * (rx - size * 1.6);
+    const iy = cy + Math.sin(a) * (ry - size * 1.6);
+    const px = -Math.sin(a) * size * 0.6;
+    const py = Math.cos(a) * size * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(ex + px, ey + py);
+    ctx.lineTo(ex - px, ey - py);
+    ctx.lineTo(ix, iy);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.lineWidth = Math.max(2, r * 0.035);
+  ctx.strokeStyle = OUTLINE;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  ctx.stroke();
 }
 
 function drawMegaAura(ctx: CanvasRenderingContext2D, r: number, time: number): void {

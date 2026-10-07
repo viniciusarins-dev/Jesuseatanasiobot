@@ -57,6 +57,10 @@ export const GAME_CONFIG = {
     knockbackDecay: 4,
     /** Tubarão pequeno é destruído ao morder (não conta como abate do jogador). */
     smallDiesOnBite: true,
+    /** Distância (em raios do tubarão) em que ele começa a abrir a boca. */
+    mouthOpenRange: 3,
+    /** Duração da boca escancarada após uma mordida (s). */
+    biteAnimSeconds: 0.35,
   },
 
   megaShark: {

@@ -26,7 +26,14 @@ export class MegaShark extends Shark {
     return this.charging ? base * this.megaConfig.chargeSpeedMultiplier : base;
   }
 
-  override update(dt: number, targetX: number, targetY: number, speedMultiplier: number, knockbackDecay: number): void {
+  override update(
+    dt: number,
+    targetX: number,
+    targetY: number,
+    speedMultiplier: number,
+    knockbackDecay: number,
+    mouthOpenRange?: number,
+  ): void {
     if (this.chargeLeft > 0) {
       this.chargeLeft -= dt;
     } else {
@@ -36,6 +43,6 @@ export class MegaShark extends Shark {
         this.chargeLeft = this.megaConfig.chargeDuration;
       }
     }
-    super.update(dt, targetX, targetY, speedMultiplier, knockbackDecay);
+    super.update(dt, targetX, targetY, speedMultiplier, knockbackDecay, mouthOpenRange);
   }
 }

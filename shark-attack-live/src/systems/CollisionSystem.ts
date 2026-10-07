@@ -52,6 +52,7 @@ export function resolveCollisions(state: GameState, behavior: GameConfig["sharkB
       if (distSq(player.x, player.y, shark.x, shark.y) > r * r) continue;
       const damage = player.takeDamage(shark.damage);
       shark.biteCooldown = behavior.biteCooldown;
+      shark.biteAnim = behavior.biteAnimSeconds;
       const dx = shark.x - player.x;
       const dy = shark.y - player.y;
       const len = Math.hypot(dx, dy) || 1;

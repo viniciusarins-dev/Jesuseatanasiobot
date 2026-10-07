@@ -122,3 +122,24 @@ it("formatação", () => {
   expect(formatTime(272)).toBe("04:32");
   expect(formatTime(3725)).toBe("1:02:05");
 });
+
+describe("Boca do tubarão (visual)", () => {
+  it("entreabre perto do alvo, escancara ao morder e fecha longe", () => {
+    const shark = new Shark("medium", cfg.sharks.medium, 0, 0);
+    for (let i = 0; i < 60; i++) shark.update(1 / 60, 5000, 0, 1, 4, cfg.sharkBehavior.mouthOpenRange);
+    expect(shark.mouthOpen).toBeLessThan(0.05);
+
+    const near = new Shark("medium", cfg.sharks.medium, 0, 0);
+    for (let i = 0; i < 30; i++) near.update(1 / 60, near.x + 100, near.y, 1, 4, cfg.sharkBehavior.mouthOpenRange);
+    expect(near.mouthOpen).toBeGreaterThan(0.4);
+    expect(near.mouthOpen).toBeLessThan(0.7);
+
+    const state = createGameState(cfg);
+    const biter = new Shark("medium", cfg.sharks.medium, state.player.x, state.player.y);
+    state.sharks.push(biter);
+    resolveCollisions(state, cfg.sharkBehavior);
+    expect(biter.biteAnim).toBeGreaterThan(0);
+    for (let i = 0; i < 10; i++) biter.update(1 / 60, state.player.x, state.player.y, 1, 4, cfg.sharkBehavior.mouthOpenRange);
+    expect(biter.mouthOpen).toBeGreaterThan(0.75);
+  });
+});

@@ -18,6 +18,10 @@ export class Shark {
   knockY = 0;
   hitFlash = 0;
   biteCooldown = 0;
+  /** 0 = boca fechada, 1 = escancarada (só visual). */
+  mouthOpen = 0;
+  /** Tempo restante da animação de mordida. */
+  biteAnim = 0;
   age = 0;
   dead = false;
   readonly wobblePhase = Math.random() * Math.PI * 2;
@@ -49,7 +53,14 @@ export class Shark {
     return this.baseSpeed * speedMultiplier;
   }
 
-  update(dt: number, targetX: number, targetY: number, speedMultiplier: number, knockbackDecay: number): void {
+  update(
+    dt: number,
+    targetX: number,
+    targetY: number,
+    speedMultiplier: number,
+    knockbackDecay: number,
+    mouthOpenRange = 3,
+  ): void {
     this.age += dt;
     this.hitFlash = Math.max(0, this.hitFlash - dt);
     this.biteCooldown = Math.max(0, this.biteCooldown - dt);
@@ -69,6 +80,12 @@ export class Shark {
     this.knockX *= decay;
     this.knockY *= decay;
     this.angle = Math.atan2(dirY, dirX);
+
+    // Boca: entreabre perto do alvo, escancara durante a mordida.
+    this.biteAnim = Math.max(0, this.biteAnim - dt);
+    const near = len < this.radius * mouthOpenRange ? 0.55 : 0;
+    const target = this.biteAnim > 0 ? 1 : near;
+    this.mouthOpen += (target - this.mouthOpen) * Math.min(1, dt * 12);
   }
 
   /** Aplica dano; retorna true se morreu agora. */

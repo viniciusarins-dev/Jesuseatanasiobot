@@ -1,4 +1,4 @@
-import type { GameConfig } from "../config/gameConfig";
+import type { GameConfig, SharkType } from "../config/gameConfig";
 import { Player } from "../entities/Player";
 import type { Projectile } from "../entities/Projectile";
 import type { Shark } from "../entities/Shark";
@@ -32,6 +32,8 @@ export interface GameState {
   projectiles: Projectile[];
   gameOverTimer: number;
   lastRound: RoundStats | null;
+  /** Quem derrubou o jogador na última rodada (nome de quem invocou o tubarão). */
+  lastKiller: { type: SharkType; owner?: string } | null;
   bestScore: number;
 }
 
@@ -60,6 +62,7 @@ export function createGameState(cfg: GameConfig): GameState {
     projectiles: [],
     gameOverTimer: 0,
     lastRound: null,
+    lastKiller: null,
     bestScore: 0,
   };
 }

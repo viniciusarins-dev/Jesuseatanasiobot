@@ -87,3 +87,26 @@ describe("AlertBanner", () => {
     expect(internals.current?.title).toBe("MEGA");
   });
 });
+
+describe("Quem derrotou o jogador", () => {
+  it("registra o dono do tubarão da mordida final e limpa na nova rodada", async () => {
+    const { Shark } = await import("../src/entities/Shark");
+    const game = newGame();
+    const { player } = game.state;
+    player.health = 1;
+    game.state.sharks.push(new Shark("giant", GAME_CONFIG.sharks.giant, player.x, player.y, "Maria"));
+    game.update(DT);
+    expect(game.state.phase).toBe("gameover");
+    expect(game.state.lastKiller).toEqual({ type: "giant", owner: "Maria" });
+    run(game, GAME_CONFIG.gameOver.restartDelaySeconds + 0.1);
+    expect(game.state.lastKiller).toBeNull();
+  });
+
+  it("texto do game over destaca o espectador", async () => {
+    const { killerText } = await import("../src/ui/GameOverScreen");
+    expect(killerText({ type: "mega", owner: "Ana" })).toBe("🦈 Derrotado pelo tubarão de Ana!");
+    expect(killerText({ type: "small", owner: "❤️" })).toBe("🦈 Derrotado pelo tubarão-de-recife das curtidas!");
+    expect(killerText({ type: "giant" })).toBe("🦈 Derrotado por um tubarão-branco");
+    expect(killerText(null)).toBeNull();
+  });
+});
