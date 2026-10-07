@@ -41,11 +41,12 @@ export const GAME_CONFIG = {
     burstDamage: 20,
   },
 
+  /** Pequeno = tubarão-de-recife, médio = martelo, gigante = branco, MEGA = monstro. */
   sharks: {
-    small: { radius: 40, speed: 210, health: 12, damage: 6, score: 50, bodyColor: "#7fb3d5", bellyColor: "#d6eaf8" },
-    medium: { radius: 58, speed: 150, health: 40, damage: 12, score: 150, bodyColor: "#5d6d7e", bellyColor: "#d5dbdb" },
-    giant: { radius: 92, speed: 85, health: 140, damage: 25, score: 500, bodyColor: "#34495e", bellyColor: "#aab7b8" },
-    mega: { radius: 150, speed: 70, health: 900, damage: 35, score: 3000, bodyColor: "#7b1fa2", bellyColor: "#f8bbd0" },
+    small: { radius: 40, speed: 210, health: 12, damage: 6, score: 50, bodyColor: "#4f86b5", bellyColor: "#e3f2fd" },
+    medium: { radius: 58, speed: 150, health: 40, damage: 12, score: 150, bodyColor: "#8a8f7c", bellyColor: "#eceade" },
+    giant: { radius: 92, speed: 85, health: 140, damage: 25, score: 500, bodyColor: "#5d6d7a", bellyColor: "#f5f7f8" },
+    mega: { radius: 150, speed: 70, health: 900, damage: 35, score: 3000, bodyColor: "#4a148c", bellyColor: "#e1bee7" },
   } satisfies Record<SharkType, SharkStats>,
 
   sharkBehavior: {

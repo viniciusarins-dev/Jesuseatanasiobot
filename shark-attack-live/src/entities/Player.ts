@@ -11,7 +11,12 @@ export class Player {
   shieldTimer = 0;
   hitFlash = 0;
   healFlash = 0;
+  /** Direção da mira (instantânea). */
   facing = -Math.PI / 2;
+  /** Direção do corpo desenhado — segue `facing` suavemente (só visual). */
+  bodyAngle = -Math.PI / 2;
+  /** Velocidade atual em px/s (anima a pernada). */
+  swimSpeed = 0;
   time = 0;
 
   constructor(
@@ -67,7 +72,11 @@ export class Player {
     this.shieldTimer = Math.max(0, this.shieldTimer - dt);
     this.hitFlash = Math.max(0, this.hitFlash - dt);
     this.healFlash = Math.max(0, this.healFlash - dt);
+    const turn = Math.atan2(Math.sin(this.facing - this.bodyAngle), Math.cos(this.facing - this.bodyAngle));
+    this.bodyAngle += turn * Math.min(1, dt * 10);
     if (!this.alive) return;
+    const startX = this.x;
+    const startY = this.y;
 
     let targetX = this.homeX;
     let targetY = this.homeY;
@@ -106,5 +115,6 @@ export class Player {
     }
     this.x = clamp(this.x, this.homeX - this.cfg.leashRadius, this.homeX + this.cfg.leashRadius);
     this.y = clamp(this.y, this.homeY - this.cfg.leashRadius, this.homeY + this.cfg.leashRadius);
+    this.swimSpeed = dt > 0 ? Math.hypot(this.x - startX, this.y - startY) / dt : 0;
   }
 }
